@@ -68,13 +68,13 @@ export async function getDashboardStats() {
   if (!quotes) return { total: 0, aceptadas: 0, pendientes: 0, ingresos: 0 };
 
   const total = quotes.length;
-  const aceptadas = quotes.filter((q) => q.status === "aceptado").length;
+  const aceptadas = quotes.filter((q: { status: string }) => q.status === "aceptado").length;
   const pendientes = quotes.filter(
-    (q) => q.status === "enviado" || q.status === "visto"
+    (q: { status: string }) => q.status === "enviado" || q.status === "visto"
   ).length;
   const ingresos = quotes
-    .filter((q) => q.status === "aceptado")
-    .reduce((sum, q) => sum + Number(q.total), 0);
+    .filter((q: { status: string }) => q.status === "aceptado")
+    .reduce((sum: number, q: { total: number }) => sum + Number(q.total), 0);
 
   return { total, aceptadas, pendientes, ingresos };
 }
