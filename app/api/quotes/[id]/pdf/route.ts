@@ -23,11 +23,10 @@ export async function GET(
     (a: any, b: any) => a.sort_order - b.sort_order
   );
 
-  const pdfBuffer = await renderToBuffer(
-    React.createElement(QuotePDF, { quote })
-  );
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const pdfBuffer = await renderToBuffer(React.createElement(QuotePDF, { quote }) as any);
 
-  return new NextResponse(pdfBuffer, {
+  return new NextResponse(new Uint8Array(pdfBuffer), {
     headers: {
       "Content-Type": "application/pdf",
       "Content-Disposition": `attachment; filename="cotizacion-${quote.number}.pdf"`,
