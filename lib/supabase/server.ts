@@ -3,6 +3,11 @@ import { cookies } from "next/headers";
 import type { ResponseCookie } from "next/dist/compiled/@edge-runtime/cookies";
 
 export async function createClient() {
+  if (process.env.DEV_BYPASS === "true") {
+    const { createMockClient } = await import("./mock");
+    return createMockClient();
+  }
+
   const cookieStore = await cookies();
 
   return createServerClient(

@@ -2,6 +2,17 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
 export async function middleware(request: NextRequest) {
+  // ── Dev bypass: no Supabase needed ──────────────────────────────────────
+  if (process.env.DEV_BYPASS === "true") {
+    const { pathname } = request.nextUrl;
+    // Redirect login/registro → dashboard so the user lands in the app
+    if (pathname === "/login" || pathname === "/registro") {
+      return NextResponse.redirect(new URL("/dashboard", request.url));
+    }
+    return NextResponse.next({ request });
+  }
+  // ────────────────────────────────────────────────────────────────────────
+
   let supabaseResponse = NextResponse.next({ request });
 
   const supabase = createServerClient(
