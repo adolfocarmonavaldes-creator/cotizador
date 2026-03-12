@@ -23,7 +23,7 @@ ENV NEXT_PUBLIC_SUPABASE_ANON_KEY=placeholder
 ENV NEXT_PUBLIC_APP_URL=https://placeholder.run.app
 ENV NEXT_TELEMETRY_DISABLED=1
 
-RUN npm run build
+RUN mkdir -p public && npm run build
 
 # ─────────────────────────────────────────────
 # Stage 3: Production runner
@@ -36,10 +36,11 @@ ENV NEXT_TELEMETRY_DISABLED=1
 
 # Create non-root user for security
 RUN addgroup --system --gid 1001 nodejs \
- && adduser  --system --uid 1001 nextjs
+ && adduser  --system --uid 1001 nextjs \
+ && mkdir -p public
 
 # Copy only what's needed
-COPY --from=builder /app/public            ./public
+COPY --from=builder --chown=nextjs:nodejs /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static    ./.next/static
 
