@@ -10,9 +10,14 @@ export async function createClient() {
 
   const cookieStore = await cookies();
 
+  // Prefer SUPABASE_URL / SUPABASE_ANON_KEY (private, injected at runtime)
+  // so Next.js doesn't inline the build-time NEXT_PUBLIC_ placeholders.
+  const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL!;
+  const supabaseKey = process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+
   return createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    supabaseUrl,
+    supabaseKey,
     {
       cookies: {
         getAll() {
