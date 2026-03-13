@@ -5,27 +5,59 @@ import { registerAction } from "@/lib/actions/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { MailCheck } from "lucide-react";
 
 export default function RegistroPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [confirmedEmail, setConfirmedEmail] = useState<string | null>(null);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setLoading(true);
     setError(null);
     const fd = new FormData(e.currentTarget);
+    const email = fd.get("email") as string;
     const result = await registerAction({
-      email: fd.get("email") as string,
+      email,
       password: fd.get("password") as string,
       company_name: fd.get("company_name") as string,
     });
     if (result?.error) {
       setError(result.error);
       setLoading(false);
+    } else if (result?.confirmEmail) {
+      setConfirmedEmail(email);
     }
   }
 
+  // ── Success: email confirmation required ──────────────────────────────────
+  if (confirmedEmail) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="w-full max-w-md text-center space-y-6 px-8">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-violet-100 mx-auto">
+            <MailCheck className="w-8 h-8 text-violet-600" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Revisa tu correo</h1>
+            <p className="mt-2 text-sm text-gray-500">
+              Te enviamos un enlace de confirmación a{" "}
+              <span className="font-medium text-gray-800">{confirmedEmail}</span>
+            </p>
+          </div>
+          <p className="text-xs text-gray-400">
+            Haz clic en el enlace del correo para activar tu cuenta y luego inicia sesión.
+          </p>
+          <Link href="/login">
+            <Button className="w-full">Ir a iniciar sesión</Button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Registration form ─────────────────────────────────────────────────────
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="w-full max-w-md space-y-8 px-8">

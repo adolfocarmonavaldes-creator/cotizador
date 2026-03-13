@@ -17,10 +17,10 @@ export async function registerAction(formData: {
   email: string;
   password: string;
   company_name?: string;
-}): Promise<{ error?: string }> {
+}): Promise<{ error?: string; confirmEmail?: boolean }> {
   const supabase = await createClient();
   const { email, password, company_name } = formData;
-  const { error } = await supabase.auth.signUp({
+  const { data, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
@@ -28,6 +28,8 @@ export async function registerAction(formData: {
     },
   });
   if (error) return { error: error.message };
+  // Session is null when email confirmation is required
+  if (!data.session) return { confirmEmail: true };
   redirect("/dashboard");
 }
 
